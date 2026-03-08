@@ -1,5 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import '../models/Project';
 import '../models/User.dart';
+
 import 'dart:convert';
 
 /**
@@ -121,6 +123,70 @@ class StorageService {
     final prefs = await SharedPreferences.getInstance();
 
     await prefs.remove(currentUserKey);
+  }
+
+  ////////////////////////////////////
+  static const String _projectsKey = 'projects';
+
+  Future<List<Project>> getProjects() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    List<String>? jsonList = prefs.getStringList(_projectsKey);
+
+    if (jsonList == null) return [];
+
+    return jsonList
+        .map((json) => Project.fromMap(jsonDecode(json)))
+        .toList();
+  }
+
+  Future<void> saveProject(Project project) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    List<Project> projects = await getProjects();
+
+    projects.add(project);
+
+    List<String> jsonList =
+    projects.map((p) => jsonEncode(p.toMap())).toList();
+
+    await prefs.setStringList(_projectsKey, jsonList);
+  }
+
+  Future<List<Project>> getProjectsByUserId(String userId) async {
+    List<Project> projects = await getProjects();
+
+    return projects.where((p) => p.ownerId == userId).toList();
+  }
+
+  Future<void> updateProject(Project project) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    List<Project> projects = await getProjects();
+
+    int index = projects.indexWhere((p) => p.id == project.id);
+
+    if (index != -1) {
+      projects[index] = project;
+    }
+
+    List<String> jsonList =
+    projects.map((p) => jsonEncode(p.toMap())).toList();
+
+    await prefs.setStringList(_projectsKey, jsonList);
+  }
+
+  Future<void> deleteProject(String projectId) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    List<Project> projects = await getProjects();
+
+    projects.removeWhere((p) => p.id == projectId);
+
+    List<String> jsonList =
+    projects.map((p) => jsonEncode(p.toMap())).toList();
+
+    await prefs.setStringList(_projectsKey, jsonList);
   }
 
 }

@@ -15,7 +15,6 @@ class AuthProvider extends ChangeNotifier {
   bool get isAuthenticated => _currentUser != null;
   bool get isLoading => _isLoading;
   String? get error => _error;
-
   Future<void> init() async {
     _currentUser = await StorageService.getCurrentUser();
     notifyListeners();
