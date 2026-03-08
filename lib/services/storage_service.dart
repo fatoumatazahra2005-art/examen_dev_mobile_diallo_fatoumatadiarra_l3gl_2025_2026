@@ -39,15 +39,25 @@ class StorageService {
   }
 
   // ======== Cles de Stockage =========
-  static const String _keyOnboardingConmplete = 'onboarding_complete';
+  static const String _keyOnboardingComplete = 'onboarding_complete';
 
 
   bool get isOnboardingComplete {
-    return _prefs.getBool(_keyOnboardingConmplete) ?? false;
+    return _prefs.getBool(_keyOnboardingComplete) ?? false;
   }
 
   Future<void> setOnboardingComplete(bool value) async {
-    await _prefs.setBool(_keyOnboardingConmplete, value);
+    await _prefs.setBool(_keyOnboardingComplete, value);
+  }
+
+  Future<void> setOnboardingStatus(bool value) async {
+    await _prefs.setBool(_keyOnboardingComplete, value);
+  }
+
+
+  Future<bool> getOnboardingStatus() async {
+    if (!_initialized) await init(); // assure que SharedPreferences est prêt
+    return _prefs.getBool(_keyOnboardingComplete) ?? false;
   }
 
 }
