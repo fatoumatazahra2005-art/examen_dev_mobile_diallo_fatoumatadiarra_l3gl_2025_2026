@@ -1,82 +1,107 @@
 import 'package:flutter/material.dart';
-//import '../models/Project.dart';
-import '../models/Project';
+import '../models/Task.dart';
 import '../services/storage_service.dart';
 
-class ProjectProvider extends ChangeNotifier {
+class TaskProvider extends ChangeNotifier {
   final StorageService _storageService = StorageService.instance;
 
-  List<Project> _projects = [];
-  Project? _selectedProject;
+  List<Task> _tasks = [];
+  TaskStatus? _statusFilter;
+  TaskPriority? _priorityFilter;
   bool _isLoading = false;
 
   // ===== Getters =====
-  List<Project> get projects => _projects;
-
-  Project? get selectedProject => _selectedProject;
-
-  int get projectCount => _projects.length;
-
   bool get isLoading => _isLoading;
 
-  // ===== Charger les projets d'un utilisateur =====
-  Future<void> loadProjects(String userId) async {
+  List<Task> get tasks {
+    var filtered = _tasks;
+
+    if (_statusFilter != null) {
+      filtered = filtered.where((t) => t.status == _statusFilter).toList();
+    }
+
+    if (_priorityFilter != null) {
+      filtered = filtered.where((t) => t.priority == _priorityFilter).toList();
+    }
+
+
+    filtered.sort((a, b) => a.dueDate.compareTo(b.dueDate));
+
+    return filtered;
+  }
+
+  Map<TaskStatus, int> get taskCountByStatus {
+    Map<TaskStatus, int> counts = {};
+    for (var status in TaskStatus.values) {
+      counts[status] = _tasks.where((t) => t.status == status).length;
+    }
+    return counts;
+  }
+
+
+  void setStatusFilter(TaskStatus? status) {
+    _statusFilter = status;
+    notifyListeners();
+  }
+
+  void setPriorityFilter(TaskPriority? priority) {
+    _priorityFilter = priority;
+    notifyListeners();
+  }
+
+  void clearFilters() {
+    _statusFilter = null;
+    _priorityFilter = null;
+    notifyListeners();
+  }
+
+
+  Future<void> loadTasks(String projectId) async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      _projects = await _storageService.getProjectsByUserId(userId);
+      _tasks = await _storageService.getTasksByProjectId(projectId);
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-
-  Future<void> createProject(Project project) async {
-    await _storageService.saveProject(project);
-    _projects.add(project);
+  Future<void> createTask(Task task) async {
+    await _storageService.saveTask(task);
+    _tasks.add(task);
     notifyListeners();
   }
 
-
-  Future<void> updateProject(Project project) async {
-    await _storageService.updateProject(project);
-
-    final index = _projects.indexWhere((p) => p.id == project.id);
+  Future<void> updateTask(Task task) async {
+    await _storageService.updateTask(task);
+    final index = _tasks.indexWhere((t) => t.id == task.id);
     if (index != -1) {
-      _projects[index] = project;
+      _tasks[index] = task;
       notifyListeners();
     }
   }
 
+  Future<void> deleteTask(String taskId) async {
+    await _storageService.deleteTask(taskId);
+    _tasks.removeWhere((t) => t.id == taskId);
+    notifyListeners();
+  }
 
-  Future<void> deleteProject(String projectId) async {
-    await _storageService.deleteProject(projectId);
-    _projects.removeWhere((p) => p.id == projectId);
+  Future<void> updateTaskStatus(String taskId, TaskStatus status) async {
+    final task = _tasks.firstWhere(
+          (t) => t.id == taskId,
+      orElse: () => throw Exception('Task not found'),
+    );
+    task.status = status;
+    await _storageService.updateTask(task);
     notifyListeners();
   }
 
 
-  void selectProject(Project? project) {
-    if (project == null || _projects.any((p) => p.id == project.id)) {
-      _selectedProject = project;
-      notifyListeners();
-    }
-  }
-
-
-  void clearSelection() {
-    _selectedProject = null;
-    notifyListeners();
-  }
-
-
-  Project? getProjectById(String projectId) {
-    try {
-      return _projects.firstWhere((p) => p.id == projectId);
-    } catch (e) {
-      return null;
-    }
+  Task? getTaskById(String taskId) {
+    final filtered = _tasks.where((t) => t.id == taskId);
+    return filtered.isNotEmpty ? filtered.first : null;
   }
 }

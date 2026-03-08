@@ -1,6 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/Project';
+import '../models/Project.dart';
 import '../models/User.dart';
+import '../models/Task.dart';
 
 import 'dart:convert';
 
@@ -125,7 +126,7 @@ class StorageService {
     await prefs.remove(currentUserKey);
   }
 
-  ////////////////////////////////////
+  ////////////////////////////////////PROJECTS/////////
   static const String _projectsKey = 'projects';
 
   Future<List<Project>> getProjects() async {
@@ -189,4 +190,54 @@ class StorageService {
     await prefs.setStringList(_projectsKey, jsonList);
   }
 
+////////////////////////////////////TASKS/////////
+// Dans StorageService
+
+  static const String _tasksKey = 'tasks';
+
+
+  Future<List<Task>> getTasks() async {
+    if (!_initialized) await init();
+    final List<String>? jsonList = _prefs.getStringList(_tasksKey);
+    if (jsonList == null) return [];
+    return jsonList
+        .map((json) => Task.fromMap(jsonDecode(json)))
+        .toList();
+  }
+
+
+  Future<List<Task>> getTasksByProjectId(String projectId) async {
+    List<Task> allTasks = await getTasks();
+    return allTasks.where((t) => t.projectId == projectId).toList();
+  }
+
+
+  Future<void> saveTask(Task task) async {
+    List<Task> allTasks = await getTasks();
+    allTasks.add(task);
+    List<String> jsonList =
+    allTasks.map((t) => jsonEncode(t.toMap())).toList();
+    await _prefs.setStringList(_tasksKey, jsonList);
+  }
+
+
+  Future<void> updateTask(Task task) async {
+    List<Task> allTasks = await getTasks();
+    final index = allTasks.indexWhere((t) => t.id == task.id);
+    if (index != -1) {
+      allTasks[index] = task;
+      List<String> jsonList =
+      allTasks.map((t) => jsonEncode(t.toMap())).toList();
+      await _prefs.setStringList(_tasksKey, jsonList);
+    }
+  }
+
+
+  Future<void> deleteTask(String taskId) async {
+    List<Task> allTasks = await getTasks();
+    allTasks.removeWhere((t) => t.id == taskId);
+    List<String> jsonList =
+    allTasks.map((t) => jsonEncode(t.toMap())).toList();
+    await _prefs.setStringList(_tasksKey, jsonList);
+  }
 }
