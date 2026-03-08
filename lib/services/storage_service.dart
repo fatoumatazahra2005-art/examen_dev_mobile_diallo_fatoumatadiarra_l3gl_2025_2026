@@ -1,4 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import '../models/User.dart';
+import 'dart:convert';
 
 /**
  * Pattern Singleton:
@@ -58,6 +60,67 @@ class StorageService {
   Future<bool> getOnboardingStatus() async {
     if (!_initialized) await init(); // assure que SharedPreferences est prêt
     return _prefs.getBool(_keyOnboardingComplete) ?? false;
+  }
+
+  //////////////////////////////USERS//////////////////////////////////////
+
+
+  static const String usersKey = "users";
+  static const String currentUserKey = "current_user";
+
+  static Future<void> saveUsers(List<User> users) async {
+
+    final prefs = await SharedPreferences.getInstance();
+
+    final usersMap = users.map((user) => user.toMap()).toList();
+
+    await prefs.setString(
+      usersKey,
+      jsonEncode(usersMap),
+    );
+  }
+
+  static Future<List<User>> getUsers() async {
+
+    final prefs = await SharedPreferences.getInstance();
+
+    final usersString = prefs.getString(usersKey);
+
+    if (usersString == null) return [];
+
+    final List decoded = jsonDecode(usersString);
+
+    return decoded.map((map) => User.fromMap(map)).toList();
+  }
+
+  static Future<void> setCurrentUser(User user) async {
+
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString(
+      currentUserKey,
+      jsonEncode(user.toMap()),
+    );
+  }
+
+  static Future<User?> getCurrentUser() async {
+
+    final prefs = await SharedPreferences.getInstance();
+
+    final userString = prefs.getString(currentUserKey);
+
+    if (userString == null) return null;
+
+    return User.fromMap(
+      jsonDecode(userString),
+    );
+  }
+
+  static Future<void> clearCurrentUser() async {
+
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.remove(currentUserKey);
   }
 
 }
