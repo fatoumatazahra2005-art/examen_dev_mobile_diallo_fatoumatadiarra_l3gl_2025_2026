@@ -247,19 +247,5 @@ class StorageService {
     await _prefs.setStringList(_tasksKey, jsonList);
   }
 
-  static Future<void> debugPrintUsers() async {
-    final users = await getUsers();
-    if (users.isEmpty) {
-      print("Aucun utilisateur enregistré.");
-    } else {
-      print("Liste des utilisateurs enregistrés :");
-      for (var u in users) {
-        print(
-            "ID: ${u.id}, Name: ${u.name}, Email: ${u.email}, "
-                "Password: ${u.password}, Avatar: ${u.avatar}, "
-                "CreatedAt: ${u.createdAt}"
-        );
-      }
-    }
-  }
+
 }
