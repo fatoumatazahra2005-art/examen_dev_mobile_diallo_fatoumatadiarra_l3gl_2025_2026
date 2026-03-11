@@ -66,66 +66,72 @@ class StorageService {
   }
 
   //////////////////////////////USERS//////////////////////////////////////
-
-
   static const String usersKey = "users";
   static const String currentUserKey = "current_user";
 
   static Future<void> saveUsers(List<User> users) async {
-
     final prefs = await SharedPreferences.getInstance();
 
-    final usersMap = users.map((user) => user.toMap()).toList();
+    final userStrings = users.map((u) {
+      return "${u.id}|${u.name}|${u.email}|${u.password}|${u.avatar ?? ''}|${u.createdAt.millisecondsSinceEpoch}";
+    }).toList();
 
-    await prefs.setString(
-      usersKey,
-      jsonEncode(usersMap),
-    );
+    await prefs.setStringList(usersKey, userStrings);
   }
 
+  // Récupérer tous les utilisateurs
   static Future<List<User>> getUsers() async {
-
     final prefs = await SharedPreferences.getInstance();
+    final userStrings = prefs.getStringList(usersKey);
+    if (userStrings == null) return [];
 
-    final usersString = prefs.getString(usersKey);
-
-    if (usersString == null) return [];
-
-    final List decoded = jsonDecode(usersString);
-
-    return decoded.map((map) => User.fromMap(map)).toList();
+    return userStrings.map((s) {
+      final parts = s.split('|');
+      return User(
+        id: parts[0].trim(),
+        name: parts[1].trim(),
+        email: parts[2].trim(),          // <-- trim ici
+        password: parts[3].trim(),       // <-- trim ici
+        avatar: parts[4].isEmpty ? null : parts[4].trim(),
+        createdAt: DateTime.fromMillisecondsSinceEpoch(
+          int.parse(parts[5].trim()),
+        ),
+      );
+    }).toList();
   }
 
+  // Sauvegarder l'utilisateur courant
   static Future<void> setCurrentUser(User user) async {
-
     final prefs = await SharedPreferences.getInstance();
-
-    await prefs.setString(
-      currentUserKey,
-      jsonEncode(user.toMap()),
-    );
+    final s =
+        "${user.id}|${user.name}|${user.email}|${user.password}|${user.avatar ?? ''}|${user.createdAt.millisecondsSinceEpoch}";
+    await prefs.setString(currentUserKey, s);
   }
 
+  // Récupérer l'utilisateur courant
   static Future<User?> getCurrentUser() async {
-
     final prefs = await SharedPreferences.getInstance();
+    final s = prefs.getString(currentUserKey);
+    if (s == null) return null;
 
-    final userString = prefs.getString(currentUserKey);
-
-    if (userString == null) return null;
-
-    return User.fromMap(
-      jsonDecode(userString),
+    final parts = s.split('|');
+    return User(
+      id: parts[0],
+      name: parts[1],
+      email: parts[2],
+      password: parts[3],
+      avatar: parts[4].isEmpty ? null : parts[4],
+      createdAt: DateTime.fromMillisecondsSinceEpoch(int.parse(parts[5])),
     );
   }
 
+
+
+  // Supprimer l'utilisateur courant
   static Future<void> clearCurrentUser() async {
-
     final prefs = await SharedPreferences.getInstance();
-
     await prefs.remove(currentUserKey);
   }
-
   ////////////////////////////////////PROJECTS/////////
   static const String _projectsKey = 'projects';
 
@@ -239,5 +245,21 @@ class StorageService {
     List<String> jsonList =
     allTasks.map((t) => jsonEncode(t.toMap())).toList();
     await _prefs.setStringList(_tasksKey, jsonList);
+  }
+
+  static Future<void> debugPrintUsers() async {
+    final users = await getUsers();
+    if (users.isEmpty) {
+      print("Aucun utilisateur enregistré.");
+    } else {
+      print("Liste des utilisateurs enregistrés :");
+      for (var u in users) {
+        print(
+            "ID: ${u.id}, Name: ${u.name}, Email: ${u.email}, "
+                "Password: ${u.password}, Avatar: ${u.avatar}, "
+                "CreatedAt: ${u.createdAt}"
+        );
+      }
+    }
   }
 }
