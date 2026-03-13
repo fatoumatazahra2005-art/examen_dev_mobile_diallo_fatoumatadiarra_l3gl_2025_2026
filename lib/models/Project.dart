@@ -9,6 +9,7 @@ class Project {
   final String name;
   final String? description;
   final String ownerId;
+  final int color;
   final DateTime createdAt;
 
   /// Constructeur
@@ -17,6 +18,7 @@ class Project {
     required this.name,
     this.description,
     required this.ownerId,
+    required this.color,
     DateTime? createdAt,
   }) : createdAt = createdAt ?? DateTime.now();
 
@@ -37,6 +39,7 @@ class Project {
       name: name ?? this.name,
       description: description ?? this.description,
       ownerId: ownerId ?? this.ownerId,
+      color: color ?? this.color,
 
       createdAt: createdAt ?? this.createdAt,
     );
@@ -52,7 +55,7 @@ class Project {
       'name': name,
       'description': description,
       'ownerId': ownerId,
-
+      'color': color,
       'createdAt': createdAt.toString(),
     };
   }
@@ -66,6 +69,8 @@ class Project {
       name: map['name'] as String,
       description: map['description'] as String?,
       ownerId: map['ownerId'] as String,
+      color: map['color'] as int,
+
       createdAt: DateTime.parse(map['createdAt'] as String),
     );
   }
