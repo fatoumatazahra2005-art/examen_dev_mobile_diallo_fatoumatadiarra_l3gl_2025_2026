@@ -4,6 +4,7 @@ import 'package:sunu_task/screens/home/tabs/tasks_tab.dart';
 import '../../providers/auth_provider.dart';
 import 'tabs/dashboard_tab.dart';
 import 'tabs/projects_tab.dart';
+import 'tabs/profile_tab.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,11 +19,19 @@ class _HomeScreenState extends State<HomeScreen> {
 //Center(child: Text("Dashboard")),
   //Center(child: Text("Projets")),
   //Center(child: Text("Tâches")),
-  final List<Widget> _pages = const [
+  // Center(child: Text("Profil")),
+  final List<Widget> _pages = [
     DashboardTab(),
     ProjectsTab(),
     TasksTab(tasks: []),
-    Center(child: Text("Profil")),
+    ProfileTab(
+      //user: currentUser,
+      projectsCount: 5,
+      tasksCount: 42,
+      onLogout: () {
+        print('Utilisateur déconnecté');
+      },
+    )
   ];
 
   void _onTabSelected(int index){
