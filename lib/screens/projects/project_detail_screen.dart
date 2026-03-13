@@ -7,6 +7,7 @@ import '../../models/task.dart';
 import '../../providers/project_provider.dart';
 import '../../providers/task_provider.dart';
 import '../../widgets/cards/task_card.dart';
+import '../tasks/task_form_screen.dart';
 
 class ProjectDetailScreen extends StatelessWidget {
   final Project project;
@@ -77,16 +78,17 @@ class ProjectDetailScreen extends StatelessWidget {
         ],
       ),
 
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(
-            context,
-            "/createTask",
-            arguments: project,
-          );
-        },
-        child: const Icon(Icons.add),
-      ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => TaskFormScreen(projectId: project.id),
+              ),
+            );
+          },
+          child: const Icon(Icons.add),
+        ),
 
       body: ListView(
         padding: const EdgeInsets.all(16),
