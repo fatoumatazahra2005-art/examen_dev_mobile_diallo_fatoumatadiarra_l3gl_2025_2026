@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sunu_task/screens/home/tabs/tasks_tab.dart';
 import '../../providers/auth_provider.dart';
 import 'tabs/dashboard_tab.dart';
 import 'tabs/projects_tab.dart';
@@ -16,10 +17,11 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 //Center(child: Text("Dashboard")),
   //Center(child: Text("Projets")),
+  //Center(child: Text("Tâches")),
   final List<Widget> _pages = const [
     DashboardTab(),
     ProjectsTab(),
-    Center(child: Text("Tâches")),
+    TasksTab(tasks: []),
     Center(child: Text("Profil")),
   ];
 
