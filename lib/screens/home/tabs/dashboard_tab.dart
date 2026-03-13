@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sunu_task/core/constants/app_colors.dart';
+import '../../../providers/auth_provider.dart';
 import '../../../services/storage_service.dart';
 import '../../../models/Project.dart';
 import '../../../models/Task.dart';
@@ -30,9 +32,14 @@ class _DashboardTabState extends State<DashboardTab> {
   Future<void> loadData() async {
 
     final storage = StorageService.instance;
+    final currentUser = Provider.of<AuthProvider>(context, listen: false).currentUser;
+    if (currentUser == null) return;
 
-    projects = await storage.getProjects();
-    tasks = await storage.getTasks();
+   final  allProjects= await storage.getProjects();
+   final allTasks = await storage.getTasks();
+
+    projects = allProjects.where((p) => p.ownerId == currentUser.id).toList();
+    tasks = allTasks.where((t) => t.userId == currentUser.id).toList();
 
     todo = tasks.where((t) => t.status == "todo").length;
     inProgress = tasks.where((t) => t.status == "inProgress").length;
