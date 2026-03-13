@@ -7,6 +7,7 @@ class Task {
   String projectId;
   String title;
   String description;
+  String userId;
   TaskStatus status;
   TaskPriority priority;
   DateTime dueDate;
@@ -16,6 +17,7 @@ class Task {
     required this.projectId,
     required this.title,
     required this.description,
+    required this.userId,
     this.status = TaskStatus.todo,
     this.priority = TaskPriority.medium,
     required this.dueDate,
@@ -28,6 +30,7 @@ class Task {
       'projectId': projectId,
       'title': title,
       'description': description,
+      'userId': userId,
       'status': status.index,
       'priority': priority.index,
       'dueDate': dueDate.toString(),
@@ -41,6 +44,7 @@ class Task {
       projectId: map['projectId'],
       title: map['title'],
       description: map['description'],
+      userId: map['userId'],
       status: TaskStatus.values[map['status']],
       priority: TaskPriority.values[map['priority']],
       dueDate: DateTime.parse(map['dueDate']),
