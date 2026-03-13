@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sunu_task/core/constants/app_colors.dart';
-
 import '../../../providers/project_provider.dart';
 import '../../../widgets/cards/project_card.dart';
-import '../../../widgets/common/loading_indicator.dart';
+import '../../projects/project_detail_screen.dart';
 import '../../projects/project_form_screen.dart';
+//import '../../../models/Project.dart';
 
 class ProjectsTab extends StatelessWidget {
   const ProjectsTab({super.key});
@@ -53,7 +52,14 @@ class ProjectsTab extends StatelessWidget {
           color: Color(project.color),
           taskCount: 0,
 
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ProjectDetailScreen(project: project),
+              ),
+            );
+          },
 
           onEdit: () {
             Navigator.push(

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sunu_task/screens/projects/project_form_screen.dart';
 
-import '../../models/project.dart';
+import '../../models/Project.dart';
 import '../../models/task.dart';
 import '../../providers/project_provider.dart';
 import '../../providers/task_provider.dart';
@@ -35,10 +36,11 @@ class ProjectDetailScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () {
-              Navigator.pushNamed(
+              Navigator.push(
                 context,
-                "/editProject",
-                arguments: project,
+                MaterialPageRoute(
+                  builder: (_) => ProjectFormScreen(project: project),
+                ),
               );
             },
           ),

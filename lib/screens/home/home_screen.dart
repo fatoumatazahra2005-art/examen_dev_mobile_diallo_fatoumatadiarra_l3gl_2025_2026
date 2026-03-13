@@ -4,6 +4,7 @@ import 'package:sunu_task/screens/home/tabs/tasks_tab.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/project_provider.dart';
 import '../../providers/task_provider.dart';
+import '../auth/login_screen.dart';
 import '../projects/project_form_screen.dart';
 import 'tabs/dashboard_tab.dart';
 import 'tabs/projects_tab.dart';
@@ -149,8 +150,14 @@ class _HomeScreenState extends State<HomeScreen> {
             ListTile(
               leading: const Icon(Icons.logout),
               title: const Text("Déconnexion"),
-              onTap: (){
-                authProvider.logout();
+              onTap: () async {
+                await authProvider.logout();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LoginScreen(),
+                  ),
+                );
               },
             ),
 
