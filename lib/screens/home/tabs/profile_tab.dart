@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import '../../../core/constants/app_colors.dart';
 import '../../../models/User.dart';
 
 
@@ -40,13 +41,17 @@ class ProfileTab extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             user.email,
-            style: const TextStyle(fontSize: 16, color: Colors.grey),
+            style: const TextStyle(fontSize: 16,
+                color: AppColors.textPrimary),
           ),
           const SizedBox(height: 16),
           // Date d'inscription
           Text(
             'Inscrit depuis : ${user.createdAt.toLocal().toShortDateString()}',
-            style: const TextStyle(fontSize: 14, color: Colors.grey),
+            style: const TextStyle(fontSize: 14,
+                color: AppColors.textPrimary,
+                fontWeight:  FontWeight.bold
+            ),
           ),
           const SizedBox(height: 24),
           // Statistiques personnelles
@@ -89,7 +94,7 @@ class ProfileTab extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               title,
-              style: const TextStyle(fontSize: 14, color: Colors.grey),
+              style: const TextStyle(fontSize: 14, color: AppColors.textPrimary),
             ),
           ],
         ),
