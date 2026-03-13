@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/project_provider.dart';
+import '../../../providers/task_provider.dart';
 import '../../../widgets/cards/project_card.dart';
 import '../../projects/project_detail_screen.dart';
 import '../../projects/project_form_screen.dart';
@@ -21,6 +22,7 @@ class ProjectsTab extends StatelessWidget {
     }**/
 
     final projects = projectProvider.projects;
+
 
     // Etat vide
     if (projects.isEmpty) {
@@ -45,13 +47,17 @@ class ProjectsTab extends StatelessWidget {
       itemCount: projects.length,
       itemBuilder: (context, index) {
         final project = projects[index];
+        final taskProvider = Provider.of<TaskProvider>(context); // instance
+        final taskCount = taskProvider.tasks
+            .where((t) => t.projectId == project.id)
+            .length;
 
 
         return ProjectCard(
           name: project.name,
           description: project.description ?? "",
           color: Color(project.color),
-          taskCount: 0,
+          taskCount: taskCount,
 
           onTap: () {
             Navigator.push(
