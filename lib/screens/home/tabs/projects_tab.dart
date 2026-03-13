@@ -5,6 +5,7 @@ import 'package:sunu_task/core/constants/app_colors.dart';
 import '../../../providers/project_provider.dart';
 import '../../../widgets/cards/project_card.dart';
 import '../../../widgets/common/loading_indicator.dart';
+import '../../projects/project_form_screen.dart';
 
 class ProjectsTab extends StatelessWidget {
   const ProjectsTab({super.key});
@@ -49,9 +50,23 @@ class ProjectsTab extends StatelessWidget {
         return ProjectCard(
           name: project.name,
           description: project.description ?? "",
-          color: AppColors.success,
+          color: Color(project.color),
           taskCount: 0,
+
           onTap: () {},
+
+          onEdit: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ProjectFormScreen(project: project),
+              ),
+            );
+          },
+
+          onDelete: () {
+            projectProvider.deleteProject(project.id);
+          },
         );
       },
     );
