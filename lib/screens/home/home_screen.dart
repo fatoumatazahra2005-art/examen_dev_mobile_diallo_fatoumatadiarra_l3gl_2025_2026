@@ -4,6 +4,7 @@ import 'package:sunu_task/screens/home/tabs/tasks_tab.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/project_provider.dart';
 import '../../providers/task_provider.dart';
+import '../projects/project_form_screen.dart';
 import 'tabs/dashboard_tab.dart';
 import 'tabs/projects_tab.dart';
 import 'tabs/profile_tab.dart';
@@ -167,6 +168,11 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: (_currentIndex == 0 || _currentIndex == 1)
           ? FloatingActionButton(
         onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const ProjectFormScreen(),)
+          );
           print("Créer un nouveau projet");
         },
         child: const Icon(Icons.add),
