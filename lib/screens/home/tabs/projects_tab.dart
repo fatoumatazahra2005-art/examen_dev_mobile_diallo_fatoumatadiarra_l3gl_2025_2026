@@ -14,11 +14,11 @@ class ProjectsTab extends StatelessWidget {
     final projectProvider = Provider.of<ProjectProvider>(context);
 
     // Etat loading
-    if (projectProvider.isLoading) {
+   /** if (projectProvider.isLoading) {
       return const Center(
         child: LoadingIndicator(),
       );
-    }
+    }**/
 
     final projects = projectProvider.projects;
 

@@ -104,4 +104,10 @@ class TaskProvider extends ChangeNotifier {
     final filtered = _tasks.where((t) => t.id == taskId);
     return filtered.isNotEmpty ? filtered.first : null;
   }
+  List<Task> getTasksByUserId(String userId) {
+    return _tasks.where((t) => t.projectId == userId).toList();
+  }
+  int getTaskCountByUser(String userId) {
+    return _tasks.where((t) => t.projectId == userId).length;
+  }
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sunu_task/screens/home/tabs/tasks_tab.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/project_provider.dart';
+import '../../providers/task_provider.dart';
 import 'tabs/dashboard_tab.dart';
 import 'tabs/projects_tab.dart';
 import 'tabs/profile_tab.dart';
@@ -14,14 +16,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   int _currentIndex = 0;
 //Center(child: Text("Dashboard")),
   //Center(child: Text("Projets")),
   //Center(child: Text("Tâches")),
   // Center(child: Text("Profil")),
-  final List<Widget> _pages = [
-    DashboardTab(),
+  /**final List<Widget> _pages = [
+   DashboardTab(),
     ProjectsTab(),
     TasksTab(tasks: []),
     ProfileTab(
@@ -32,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
         print('Utilisateur déconnecté');
       },
     )
-  ];
+  ];**/
 
   void _onTabSelected(int index){
     setState(() {
@@ -44,7 +45,41 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
 
     final authProvider = Provider.of<AuthProvider>(context);
+    final projectProvider = Provider.of<ProjectProvider>(context);
+    final taskProvider = Provider.of<TaskProvider>(context);
     final user = authProvider.currentUser;
+
+    if (user == null) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (projectProvider.projects.isEmpty && !projectProvider.isLoading) {
+      projectProvider.loadProjects(user.id);
+    }
+    if (taskProvider.tasks.isEmpty && !taskProvider.isLoading) {
+      taskProvider.loadTasks(user.id);
+    }
+
+    final projectsCount = projectProvider.projectCount;
+    final tasksCount = taskProvider.getTaskCountByUser(user.id);
+    final userTasks = taskProvider.getTasksByUserId(user.id);
+
+    final pages = [
+      DashboardTab(),
+      ProjectsTab(),
+      TasksTab(tasks: userTasks),
+      ProfileTab(
+        user: user,
+        projectsCount: projectsCount,
+        tasksCount: tasksCount,
+        onLogout: () async {
+          await authProvider.logout();
+          Navigator.pushReplacementNamed(context, '/login');
+        },
+      ),
+    ];
 
     return Scaffold(
 
@@ -125,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
       /// BODY AVEC INDEXEDSTACK
       body: IndexedStack(
         index: _currentIndex,
-        children: _pages,
+        children: pages,
       ),
 
       /// FLOATING BUTTON
