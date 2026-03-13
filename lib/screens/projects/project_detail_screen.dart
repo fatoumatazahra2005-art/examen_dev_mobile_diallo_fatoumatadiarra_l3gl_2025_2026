@@ -1,13 +1,15 @@
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sunu_task/screens/tasks/task_form_screen.dart';
 import 'package:sunu_task/screens/projects/project_form_screen.dart';
 
 import '../../models/Project.dart';
-import '../../models/task.dart';
+import '../../models/Task.dart';
+import '../../providers/auth_provider.dart';
 import '../../providers/project_provider.dart';
 import '../../providers/task_provider.dart';
 import '../../widgets/cards/task_card.dart';
-import '../tasks/task_form_screen.dart';
 
 class ProjectDetailScreen extends StatelessWidget {
   final Project project;
@@ -16,13 +18,16 @@ class ProjectDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final taskProvider = Provider.of<TaskProvider>(context);
     final projectProvider = Provider.of<ProjectProvider>(context);
+    final currentUser = Provider.of<AuthProvider>(context, listen: false).currentUser;
 
-    final projectTasks =
-    taskProvider.tasks.where((t) => t.projectId == project.id).toList();
+    // Tâches du projet uniquement pour l'utilisateur connecté
+    final projectTasks = taskProvider.tasks
+        .where((t) => t.projectId == project.id && t.userId == currentUser?.id)
+        .toList();
 
+    // Statistiques
     final todo = projectTasks.where((t) => t.status == TaskStatus.todo).length;
     final inProgress =
         projectTasks.where((t) => t.status == TaskStatus.inProgress).length;
@@ -32,7 +37,6 @@ class ProjectDetailScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Détails du projet"),
         actions: [
-
           /// Modifier projet
           IconButton(
             icon: const Icon(Icons.edit),
@@ -54,8 +58,7 @@ class ProjectDetailScreen extends StatelessWidget {
                 context: context,
                 builder: (context) => AlertDialog(
                   title: const Text("Supprimer le projet"),
-                  content: const Text(
-                      "Voulez-vous vraiment supprimer ce projet ?"),
+                  content: const Text("Voulez-vous vraiment supprimer ce projet ?"),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
@@ -65,8 +68,8 @@ class ProjectDetailScreen extends StatelessWidget {
                       onPressed: () {
                         taskProvider.deleteTasksByProject(project.id);
                         projectProvider.deleteProject(project.id);
-                        Navigator.pop(context);
-                        Navigator.pop(context);
+                        Navigator.pop(context); // ferme le dialogue
+                        Navigator.pop(context); // retourne à la liste projets
                       },
                       child: const Text("Supprimer"),
                     ),
@@ -78,22 +81,21 @@ class ProjectDetailScreen extends StatelessWidget {
         ],
       ),
 
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => TaskFormScreen(projectId: project.id),
-              ),
-            );
-          },
-          child: const Icon(Icons.add),
-        ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => TaskFormScreen(projectId: project.id),
+            ),
+          );
+        },
+        child: const Icon(Icons.add),
+      ),
 
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-
           /// HEADER PROJET
           Container(
             padding: const EdgeInsets.all(16),
@@ -112,9 +114,7 @@ class ProjectDetailScreen extends StatelessWidget {
                     color: Colors.white,
                   ),
                 ),
-
                 const SizedBox(height: 8),
-
                 Text(
                   project.description ?? "",
                   style: const TextStyle(color: Colors.white),
@@ -152,10 +152,9 @@ class ProjectDetailScreen extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-
           const SizedBox(height: 10),
 
-          /// LISTE TACHES
+          /// LISTE TÂCHES
           if (projectTasks.isEmpty)
             const Text("Aucune tâche pour ce projet"),
 

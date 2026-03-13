@@ -46,6 +46,7 @@ class ProjectsTab extends StatelessWidget {
       itemBuilder: (context, index) {
         final project = projects[index];
 
+
         return ProjectCard(
           name: project.name,
           description: project.description ?? "",
