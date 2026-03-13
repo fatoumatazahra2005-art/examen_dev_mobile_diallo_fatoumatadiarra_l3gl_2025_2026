@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import 'tabs/dashboard_tab.dart';
+import 'tabs/projects_tab.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,9 +15,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int _currentIndex = 0;
 //Center(child: Text("Dashboard")),
+  //Center(child: Text("Projets")),
   final List<Widget> _pages = const [
     DashboardTab(),
-    Center(child: Text("Projets")),
+    ProjectsTab(),
     Center(child: Text("Tâches")),
     Center(child: Text("Profil")),
   ];
