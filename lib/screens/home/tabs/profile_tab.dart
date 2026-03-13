@@ -1,7 +1,10 @@
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../models/User.dart';
+import '../../../providers/auth_provider.dart';
+import '../../auth/login_screen.dart';
 
 
 class ProfileTab extends StatelessWidget {
@@ -65,14 +68,21 @@ class ProfileTab extends StatelessWidget {
           const SizedBox(height: 32),
           // Bouton de déconnexion
           ElevatedButton.icon(
-            onPressed: onLogout,
+            onPressed: () async {
+              // Récupère l'instance de AuthProvider
+              final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+              // Déconnexion
+              await authProvider.logout();
+
+              // Redirige vers LoginScreen
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
+              );
+            },
             icon: const Icon(Icons.logout),
             label: const Text('Déconnexion'),
-            style: ElevatedButton.styleFrom(
-              padding:
-              const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-              textStyle: const TextStyle(fontSize: 16),
-            ),
           ),
         ],
       ),
