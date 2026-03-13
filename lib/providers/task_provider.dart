@@ -110,4 +110,8 @@ class TaskProvider extends ChangeNotifier {
   int getTaskCountByUser(String userId) {
     return _tasks.where((t) => t.projectId == userId).length;
   }
+  void deleteTasksByProject(String projectId) {
+    _tasks.removeWhere((task) => task.projectId == projectId);
+    notifyListeners();
+  }
 }
